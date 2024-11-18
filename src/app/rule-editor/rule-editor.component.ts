@@ -6,6 +6,7 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { RuleServiceService } from '../service/rule-service.service';
 
 declare const monaco: any;
 
@@ -21,7 +22,7 @@ export class RuleEditorComponent implements AfterViewInit, OnInit {
   editorInstance: any;
 
   constructor(
-    //private ruleService: RuleService,
+    private ruleService: RuleServiceService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
@@ -304,5 +305,23 @@ export class RuleEditorComponent implements AfterViewInit, OnInit {
       );
     });
   }
+  saveRule(): void {
+    const ruleName = prompt('Enter rule name:', 'NewRule');
 
+    if (ruleName) {
+      this.ruleService.createRule(ruleName, this.code);
+
+      this.rules = this.ruleService.getAllRules();
+    }
+  }
+
+  loadRule(name: string): void {
+    const rule = this.ruleService.getRule(name);
+
+    if (rule) {
+      this.code = rule;
+
+      this.editorInstance.setValue(this.code); // Load rule content into editor
+    }
+  }
 }
